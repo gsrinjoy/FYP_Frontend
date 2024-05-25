@@ -1,7 +1,8 @@
+// src/components/ResultsDashboard.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Card, Container, Row, Col, Modal, Button } from 'react-bootstrap';
 import styled from 'styled-components';
+import axiosInstance from '../axiosInstance';
 
 const ResultsDashboardContainer = styled(Container)`
     padding: 20px;
@@ -19,11 +20,7 @@ const ResultsDashboard = () => {
 
     const fetchResults = async () => {
         try {
-            const response = await axios.get('https://api.femizone.in/api/results/', {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+            const response = await axiosInstance.get('/results/');
             setResults(response.data);
         } catch (error) {
             console.error('Error fetching results:', error);

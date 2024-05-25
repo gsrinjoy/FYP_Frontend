@@ -1,17 +1,12 @@
+// src/components/QuestionsForm.js
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Container, InputGroup, Spinner } from 'react-bootstrap';
-import styled from 'styled-components';
-
-const QuestionsFormContainer = styled(Container)`
-    padding: 20px;
-    background-color: #f8f9fa;
-`;
+import axiosInstance from '../axiosInstance';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 const QuestionsForm = ({ token }) => {
     const [questions, setQuestions] = useState(['']);
-    const [isLoading, setIsLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
     const navigate = useNavigate();
 
     const handleChange = (index, value) => {
@@ -26,40 +21,33 @@ const QuestionsForm = ({ token }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
         try {
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 'https://api.femizone.in/api/gen/',
-                { questions: questions.map(q => ({ text: q })) },
-                { headers: { Authorization: `Bearer ${token}` } }
+                { questions: questions.map(q => ({ text: q })) }
             );
-            setIsLoading(false);
+            console.log('Questions processed:', response.data);
             navigate('/dashboard');
         } catch (error) {
-            setIsLoading(false);
             console.error('Error submitting questions:', error);
         }
     };
 
     return (
-        <QuestionsFormContainer>
-            <Form onSubmit={handleSubmit}>
-                {questions.map((question, index) => (
-                    <InputGroup className="mb-3" key={index}>
-                        <Form.Control
-                            type="text"
-                            placeholder="Enter your question"
-                            value={question}
-                            onChange={(e) => handleChange(index, e.target.value)}
-                        />
-                    </InputGroup>
-                ))}
-                <Button variant="secondary" onClick={addQuestion} className="mr-2">Add Question</Button>
-                <Button variant="primary" type="submit" disabled={isLoading}>
-                    {isLoading ? <Spinner animation="border" size="sm" /> : 'Submit'}
-                </Button>
-            </Form>
-        </QuestionsFormContainer>
+        <form onSubmit={handleSubmit}>
+            {questions.map((question, index) => (
+                <input
+                    key={index}
+                    type="text"
+                    placeholder="Enter your question"
+                    value={question}
+                    onChange={(e) => handleChange(index, e.target.value)}
+                />
+            ))}
+            <button type="button" onClick={addQuestion}>Add Question</button>
+            <button type="submit">Submit</button>
+            <ProgressBar now={progress} label={`${progress}%`} />
+        </form>
     );
 };
 

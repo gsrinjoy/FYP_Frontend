@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
@@ -24,9 +25,11 @@ const App = () => {
     const handleLogout = () => {
         setToken(null);
         localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/auth';
     };
 
-    const ProtectedRoute = ({ element, ...rest }) => {
+    const ProtectedRoute = ({ element }) => {
         return token ? element : <Navigate to="/auth" />;
     };
 
@@ -43,21 +46,15 @@ const App = () => {
                                     <Nav.Link href="/questions">Questions</Nav.Link>
                                     <Nav.Link href="/dashboard">Dashboard</Nav.Link>
                                     <Nav.Link href="/results">Results</Nav.Link>
+                                    <Button variant="link" onClick={handleLogout}>Logout</Button>
                                 </>
-                            )}
-                        </Nav>
-                        <Nav>
-                            {token ? (
-                                <Button variant="outline-danger" onClick={handleLogout}>Logout</Button>
-                            ) : (
-                                <Nav.Link href="/auth">Login</Nav.Link>
                             )}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
             <Routes>
-                <Route path="/auth" element={<AuthForm setToken={handleSetToken} />} />
+                <Route path="/auth" element={<AuthForm setToken={handleSetToken} handleLogout={handleLogout} />} />
                 <Route path="/questions" element={<ProtectedRoute element={<QuestionsForm token={token} />} />} />
                 <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
                 <Route path="/results" element={<ProtectedRoute element={<ResultsDashboard />} />} />

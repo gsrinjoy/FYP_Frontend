@@ -1,3 +1,4 @@
+// src/components/AuthForm.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -28,10 +29,6 @@ const AuthForm = ({ setToken, handleLogout }) => {
         } catch (error) {
             console.error(`${isLogin ? 'Login' : 'Registration'} failed:`, error);
         }
-    };
-
-    const handleLogoutClick = () => {
-        handleLogout(); // Call the handleLogout function passed from props
     };
 
     return (
@@ -66,7 +63,7 @@ const AuthForm = ({ setToken, handleLogout }) => {
                         </Button>
                     </Form>
                     {localStorage.getItem('token') && (
-                        <Button variant="danger" onClick={handleLogoutClick} className="mt-2" block>
+                        <Button variant="danger" onClick={handleLogout} className="mt-2" block>
                             Logout
                         </Button>
                     )}
@@ -77,4 +74,3 @@ const AuthForm = ({ setToken, handleLogout }) => {
 };
 
 export default AuthForm;
-
